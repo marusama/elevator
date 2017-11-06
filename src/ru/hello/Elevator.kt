@@ -3,8 +3,6 @@ package ru.hello
 import ru.hello.events.BaseEvent
 import ru.hello.events.FloorEvent
 import ru.hello.events.FromToEvent
-import java.lang.*
-import java.util.*
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 
@@ -27,14 +25,14 @@ class Elevator(val bottom: Int, val top: Int) : Runnable {
     override fun run() = try {
         while (true) workCycle()
     } catch (_: InterruptedException) {
-        println("Elevator destroyed")
+        println("Elevator is destroyed")
     }
 
-    public fun addEvent(event: BaseEvent) = events.put(event)
+    fun addEvent(event: BaseEvent) = events.put(event)
 
     private fun workCycle() {
         val event = events.take()
-        when(event){
+        return when(event){
             is FloorEvent -> processFloorEvent(event)
             is FromToEvent -> processFromToEvent(event)
         }
@@ -98,11 +96,13 @@ class Elevator(val bottom: Int, val top: Int) : Runnable {
     }
 
     private fun openDoor() {
+        this.doors = true
         println("open")
         Thread.sleep(TICK)
     }
 
     private fun closeDoor() {
+        this.doors = false
         println("close")
         Thread.sleep(TICK)
     }

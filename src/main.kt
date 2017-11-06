@@ -1,6 +1,8 @@
+
 import ru.hello.Elevator
 import ru.hello.events.FloorEvent
 import ru.hello.events.FromToEvent
+import java.util.regex.Pattern
 
 fun main(args: Array<String>) {
     println("Hello, world!")
@@ -11,53 +13,16 @@ fun main(args: Array<String>) {
     loop@ while (true) {
         val s = readLine()
 
-        if (s == "q") {
-            break
-        }
-
-        val n = parseInt(s)
-        if (n != null) {
-            e.addEvent(FloorEvent(n))
-            continue
-        }
-
-        val p = parsePairInt(s)
-        if (p != null) {
-            e.addEvent(FromToEvent(p.first, p.second))
-            continue
+        when {
+            s == null || s == "q" -> break@loop
+            Pattern.matches("^\\d+$", s) -> e.addEvent(FloorEvent(Integer.parseInt(s)))
+            Pattern.matches("^\\d+-\\d+$", s) -> {
+                val ss = s.split("-")
+                e.addEvent(FromToEvent(Integer.parseInt(ss[0]), Integer.parseInt(ss[1])))
+            }
         }
     }
 
     t.interrupt()
     t.join()
-}
-
-fun parseInt(s: String?) : Int? {
-    if (!s.isNullOrEmpty()) {
-        try {
-            return Integer.valueOf(s)
-        }
-        catch (_: NumberFormatException){
-            return null
-        }
-    }
-    return null
-}
-
-fun parsePairInt(s: String?) : Pair<Int, Int>? {
-    if (!s.isNullOrEmpty()) {
-        try {
-            val l = s!!.split("-")
-            if (l.size == 2) {
-                val from = Integer.valueOf(l[0])
-                val to = Integer.valueOf(l[1])
-                return Pair(from, to)
-            }
-            return null
-        }
-        catch (_: NumberFormatException){
-            return null
-        }
-    }
-    return null
 }
